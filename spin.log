@@ -1,0 +1,6 @@
+Logging component stdio to ".spin/logs/"
+
+Serving http://127.0.0.1:3000
+Available Routes:
+  api: http://127.0.0.1:3000/api (wildcard)
+worker failed: worker panicked

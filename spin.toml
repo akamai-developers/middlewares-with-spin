@@ -1,0 +1,46 @@
+#:schema https://schemas.spinframework.dev/spin/manifest-v2/latest.json
+
+spin_manifest_version = 2
+
+[application]
+name = "middlewares-in-spin"
+version = "0.1.0"
+authors = ["Thorsten Hans <thorsten.hans@gmail.com>"]
+description = ""
+
+[variables]
+auth_token = { default = "6f1c2e9a-4b7d-4c3e-9a1f-2d8e5b0c7a64", secret = true }
+gzip_min_size = { default = "1024" }
+
+[[trigger.http]]
+route = "/api/..."
+component = "api"
+dependencies.middleware = [
+  { component = "auth", inherit_configuration = ["variables"] },
+  { component = "gzip", inherit_configuration = ["variables"] },
+]
+
+[component.api]
+source = "api/target/wasm32-wasip2/release/api.wasm"
+allowed_outbound_hosts = ["https://jsonplaceholder.typicode.com"]
+variables = { auth_token = "{{ auth_token }}", gzip_min_size = "{{ gzip_min_size }}" }
+[component.api.build]
+command = "cargo build --target wasm32-wasip2 --release"
+workdir = "api"
+watch = ["src/**/*.rs", "Cargo.toml"]
+
+[component.auth]
+source = "auth/target/wasm32-wasip2/release/auth.wasm"
+allowed_outbound_hosts = []
+[component.auth.build]
+command = "cargo build --target wasm32-wasip2 --release"
+workdir = "auth"
+watch = ["src/**/*.rs", "Cargo.toml"]
+
+[component.gzip]
+source = "gzip/target/wasm32-wasip2/release/gzip.wasm"
+allowed_outbound_hosts = []
+[component.gzip.build]
+command = "cargo build --target wasm32-wasip2 --release"
+workdir = "gzip"
+watch = ["src/**/*.rs", "Cargo.toml"]

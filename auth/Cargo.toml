@@ -1,0 +1,16 @@
+[package]
+name = "auth"
+authors = ["Thorsten Hans <thorsten.hans@gmail.com>"]
+description = ""
+version = "0.1.0"
+rust-version = "1.93"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = "1"
+spin-sdk = { version = "7.0.0", features = ["http-middleware"] }
+
+[workspace]
