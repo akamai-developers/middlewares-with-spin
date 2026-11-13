@@ -1,6 +1,7 @@
+use anyhow::Context;
 use spin_sdk::http::body::IncomingBodyExt;
 use spin_sdk::http::{EmptyBody, IntoResponse, Method, Request, Response};
-use spin_sdk::http_service;
+use spin_sdk::{http_service, variables};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[http_service]
@@ -12,8 +13,11 @@ async fn handle_api(req: Request) -> anyhow::Result<impl IntoResponse> {
         })
         .to_string(),
         (&Method::GET, "/api/posts") => {
-            let upstream = Request::get("https://jsonplaceholder.typicode.com/posts")
-                .body(EmptyBody::new())?;
+            let upstream_origin = variables::get("sample_data_origin")
+                .await
+                .context("Invalid App Configuration")?;
+            let upstream_req_url = format!("{}/posts", upstream_origin);
+            let upstream = Request::get(upstream_req_url).body(EmptyBody::new())?;
             let res = spin_sdk::http::send(upstream).await?;
             let posts = res.into_body().bytes().await?;
             String::from_utf8(posts.to_vec())?

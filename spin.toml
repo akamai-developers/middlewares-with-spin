@@ -11,6 +11,7 @@ description = ""
 [variables]
 auth_token = { default = "6f1c2e9a-4b7d-4c3e-9a1f-2d8e5b0c7a64", secret = true }
 gzip_min_size = { default = "1024" }
+sample_data_origin = { default = "https://jsonplaceholder.typicode.com"}
 
 [[trigger.http]]
 route = "/api/..."
@@ -27,11 +28,12 @@ dependencies.middleware = [
 
 [component.api]
 source = "api/target/wasm32-wasip2/release/api.wasm"
-allowed_outbound_hosts = ["https://jsonplaceholder.typicode.com"]
+allowed_outbound_hosts = ["{{ sample_data_origin }}"]
 
 [component.api.variables]
 auth_token = "{{ auth_token }}"
 gzip_min_size = "{{ gzip_min_size }}"
+sample_data_origin = "{{ sample_data_origin }}"
 
 [component.api.build]
 command = "cargo build --target wasm32-wasip2 --release"
